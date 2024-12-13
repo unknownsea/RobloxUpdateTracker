@@ -2,7 +2,7 @@ local time = require("timer")
 local http = require("coro-http")
 local json = require("json")
 
-function string.split(input, separator)
+string.split = function(input, separator)
     if not separator then separator = "%s" end
 
     local out = {}
@@ -13,6 +13,7 @@ function string.split(input, separator)
     return out
 end
 
+---@type table
 local rut = {
     API = {
         clientsettingscdn = "https://clientsettingscdn.roblox.com/v2/client-version/",
@@ -23,7 +24,9 @@ local rut = {
     Functions = {}
 }
 
-function rut.Functions.Get(endpoint)
+
+
+rut.Functions.Get = function(endpoint)
     assert(type(endpoint) == "string" or endpoint ~= "", "Invalid endpoint: must be a non-empty string.")
 
     local response, body = http.request("GET", endpoint)
@@ -33,8 +36,7 @@ function rut.Functions.Get(endpoint)
     return body or "No body content returned."
 end
 
-
-function rut.Events.OnUpdate(check_interval, players, callback)
+rut.Events.OnUpdate = function(check_interval, players, callback)
     coroutine.wrap(function()
         while true do
             local file = io.open("db.json", "r")
@@ -64,16 +66,22 @@ function rut.Events.OnUpdate(check_interval, players, callback)
     end)()
 end
 
-function rut.Events.OnFutureUpdate(check_interval, callback)
+---@param check_interval any
+---@param callback any
+rut.Events.OnFutureUpdate = function(check_interval, callback)
+    assert(type(check_interval) == "number", "Expected number for interval, got " .. type(check_interval))
+    assert(type(callback) == "function", "Expected function for callback, got " .. type(callback))
+
     coroutine.wrap(function()
         while true do
             time.sleep(500)
-            local body = rut.Functions.Get(rut.API.deployHistory)
-            local entries = string.split(body, "\r\n")
+            local entries = string.split(rut.Functions.Get(rut.API.deployHistory), "\r\n")
 
-            local file = io.open("DeployHistory.txt", "r")
-            local logged_data = file and file:read("*all") or {}
-            if file then file:close() end
+            --[[
+                Below code simply opens the "DeployHistory.txt" file with r(read) and then dump it 
+                all(including the file variable) into the value "logged_data" and the close the file if file
+            ]]--
+            local file = io.open("DeployHistory.txt", "r"); local logged_data = file and file:read("*all") or {}; if file then file:close() end
 
             local unix_timestamp = os.time()
             local current_time = os.date("%Y-%m-%d %H:%M:%S", unix_timestamp)
