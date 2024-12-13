@@ -13,7 +13,6 @@ string.split = function(input, separator)
     return out
 end
 
----@type table
 local rut = {
     API = {
         clientsettingscdn = "https://clientsettingscdn.roblox.com/v2/client-version/",
@@ -66,8 +65,6 @@ rut.Events.OnUpdate = function(check_interval, players, callback)
     end)()
 end
 
----@param check_interval any
----@param callback any
 rut.Events.OnFutureUpdate = function(check_interval, callback)
     assert(type(check_interval) == "number", "Expected number for interval, got " .. type(check_interval))
     assert(type(callback) == "function", "Expected function for callback, got " .. type(callback))
