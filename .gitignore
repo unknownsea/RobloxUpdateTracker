@@ -1,0 +1,9 @@
+lit.exe
+luvi.exe
+luvit.exe
+deps/
+.env
+*.log
+*.tmp
+gateway.json
+tempCodeRunnerFile.lua
